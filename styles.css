@@ -1,18 +1,23 @@
 body {
-    font-family: Arial, sans-serif;
+    background-color: black;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
 }
 
-h1 {
-    text-align: center;
+#htmlButton {
+    background-color: black;
+    color: white;
+    font-size: 1.5rem;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    transition: background-image 0.3s;
 }
 
-#container {
-    width: 600px;
-    height: 600px;
+#htmlButton:hover {
+    background-image: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+    color: black;
 }
