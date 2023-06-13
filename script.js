@@ -1,52 +1,44 @@
-const boardElement = document.getElementById('board');
-const game = new Chess();
-const board = ChessBoard('board', {
-    draggable: true,
-    position: 'start',
-    onDragStart: onDragStart,
-    onDrop: onDrop,
-    onMouseoutSquare: onMouseoutSquare,
-    onMouseoverSquare: onMouseoverSquare,
-    onSnapEnd: onSnapEnd
-});
+const container = document.getElementById('container');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(container.clientWidth, container.clientHeight);
+container.appendChild(renderer.domElement);
 
-function onDragStart(source, piece, position, orientation) {
-    if (game.in_checkmate() === true || game.in_draw() === true || piece.search(/^b/) !== -1) {
-        return false;
-    }
-}
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-function onDrop(source, target) {
-    const move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q'
-    });
+const colors = [
+    new THREE.MeshBasicMaterial({ color: 0xffffff }), // White
+    new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Red
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Green
+    new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Blue
+    new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Yellow
+    new THREE.MeshBasicMaterial({ color: 0xffa500 })  // Orange
+];
 
-    if (move === null) {
-        return 'snapback';
-    }
-}
+const cubeSize = 1;
+const cubeSpacing = 1.05;
+const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
-function onMouseoverSquare(square, piece) {
-    const moves = game.ugly_moves();
-    if (moves.length === 0) return;
-
-    const squaresToHighlight = [];
-    for (const move of moves) {
-        if (move.from === square) {
-            squaresToHighlight.push(move.to);
+for (let x = 0; x < 3; x++) {
+    for (let y = 0; y < 3; y++) {
+        for (let z = 0; z < 3; z++) {
+            const cube = new THREE.Mesh(cubeGeometry, colors);
+            cube.position.set(
+                (x - 1) * cubeSize * cubeSpacing,
+                (y - 1) * cubeSize * cubeSpacing,
+                (z - 1) * cubeSize * cubeSpacing
+            );
+            scene.add(cube);
         }
     }
-
-    board.highlight(square);
-    board.highlight(squaresToHighlight);
 }
 
-function onMouseoutSquare(square, piece) {
-    board.removeHighlights();
+camera.position.z = 10;
+
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
 }
 
-function onSnapEnd() {
-    board.position(game.fen());
-}
+animate();
